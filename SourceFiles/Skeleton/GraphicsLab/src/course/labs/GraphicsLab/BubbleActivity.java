@@ -87,14 +87,21 @@ public class BubbleActivity extends Activity {
 				.getStreamVolume(AudioManager.STREAM_MUSIC)
 				/ mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
-		// TODO - make a new SoundPool, allowing up to 10 streams 
-		mSoundPool = null;
+		// make a new SoundPool, allowing up to 10 streams
+		mSoundPool =  new SoundPool(10, AudioManager.STREAM_MUSIC, 0);;
 
-		// TODO - set a SoundPool OnLoadCompletedListener that calls setupGestureDetector()
-
+		// set a SoundPool OnLoadCompletedListener that calls setupGestureDetector()
+        mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                if(0 == status){
+                    setupGestureDetector();
+                }
+            }
+        });
 		
-		// TODO - load the sound from res/raw/bubble_pop.wav
-		mSoundID = 0;
+		// load the sound from res/raw/bubble_pop.wav
+		mSoundID = mSoundPool.load(this, R.raw.bubble_pop, 0);
 
 	}
 
@@ -127,7 +134,12 @@ public class BubbleActivity extends Activity {
 				// TODO - Implement onFling actions.
 				// You can get all Views in mFrame using the
 				// ViewGroup.getChildCount() method
+                for (int i = 0; i < mFrame.getChildCount(); i++) {
+                    View v = mFrame.getChildAt(i);
+                    BubbleView bv = (BubbleView) v;
+                    if(bv == null) continue;
 
+                }
 				
 				
 				
@@ -142,21 +154,27 @@ public class BubbleActivity extends Activity {
 			@Override
 			public boolean onSingleTapConfirmed(MotionEvent event) {
 
-				// TODO - Implement onSingleTapConfirmed actions.
+				// Implement onSingleTapConfirmed actions.
 				// You can get all Views in mFrame using the
 				// ViewGroup.getChildCount() method
+                Boolean found = false;
+                for (int i = 0; i < mFrame.getChildCount(); i++) {
+                    View v = mFrame.getChildAt(i);
+                    BubbleView bv = (BubbleView) v;
+                    if(bv == null) continue;
+                    if(bv.intersects(event.getX(), event.getY()))
+                    {
+                        // pop
+                        mFrame.removeView(bv);
+                        found = true;
+                    }
+                }
+                if(!found){
+                    // create a new BubbleView
+                    BubbleView bv = new BubbleView(BubbleActivity.this, event.getX(), event.getY());
+                    mFrame.addView(bv);
+                }
 
-
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
 				return false;
 			}
 		});
@@ -164,32 +182,21 @@ public class BubbleActivity extends Activity {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-
-		// TODO - delegate the touch to the gestureDetector 
-
-		
-		
-		
-		
-		
-		
+		// delegate the touch to the gestureDetector
+        mGestureDetector.onTouchEvent(event);
 		return false;
-	
 	}
 
 	@Override
 	protected void onPause() {
-		
-		// TODO - Release all SoundPool resources
+		// Release all SoundPool resources
+        if (null != mSoundPool)
+        {
+            mSoundPool.unload(mSoundID);
+            mSoundPool.release();
+            mSoundPool = null;
+        }
 
-
-		
-		
-		
-		
-		
-		
-		
 		super.onPause();
 	}
 
@@ -239,8 +246,8 @@ public class BubbleActivity extends Activity {
 
 			if (speedMode == RANDOM) {
 				
-				// TODO - set rotation in range [1..3]
-				mDRotate = 0;
+				// set rotation in range [1..3]
+				mDRotate = r.nextInt(3) + 1;
 
 				
 			} else {
@@ -271,16 +278,12 @@ public class BubbleActivity extends Activity {
 
 			default:
 
-				// TODO - Set movement direction and speed
+				// Set movement direction and speed
 				// Limit movement speed in the x and y
 				// direction to [-3..3].
+                mDx = r.nextInt(7)-3;
+                mDy = r.nextInt(7)-3;
 
-
-			
-			
-			
-			
-			
 			}
 		}
 
@@ -292,8 +295,8 @@ public class BubbleActivity extends Activity {
 			
 			} else {
 			
-				//TODO - set scaled bitmap size in range [1..3] * BITMAP_SIZE
-				mScaledBitmapWidth = 0;
+				// - set scaled bitmap size in range [1..3] * BITMAP_SIZE
+				mScaledBitmapWidth = (r.nextInt(3) + 1) * BITMAP_SIZE;
 			
 			}
 
