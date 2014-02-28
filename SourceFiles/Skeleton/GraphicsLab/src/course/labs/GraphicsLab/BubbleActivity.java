@@ -159,12 +159,16 @@ public class BubbleActivity extends Activity {
                     {
                         // remove and pop
                         bv.stop(true);
+                        mFrame.removeView(bv);
+                        found = true;
                     }
                 }
+                int cc = mFrame.getChildCount();
                 if(!found){
                     // create a new BubbleView
                     BubbleView bv = new BubbleView(BubbleActivity.this, event.getX(), event.getY());
                     mFrame.addView(bv);
+                    bv.start();
                 }
 
 				return false;
@@ -294,7 +298,7 @@ public class BubbleActivity extends Activity {
 			}
 
 			// create the scaled bitmap using size set above
-            mScaledBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.b128);
+            mScaledBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.b64);
 		}
 
 		// Start moving the BubbleView & updating the display
@@ -329,7 +333,9 @@ public class BubbleActivity extends Activity {
 		private synchronized boolean intersects(float x, float y) {
 
 			// DONE - Return true if the BubbleView intersects position (x,y)
-            return (Math.abs(x - mXPos) < EPS) && (Math.abs(y - mYPos) < EPS);
+            Boolean retVal;
+            retVal = (Math.abs(x - mXPos) < mScaledBitmapWidth) && (Math.abs(y - mYPos) < mScaledBitmapWidth);
+            return  retVal;
 		}
 
 		// Cancel the Bubble's movement
@@ -347,8 +353,9 @@ public class BubbleActivity extends Activity {
 					public void run() {
 						
 						// DONE - Remove the BubbleView from mFrame
-                         mFrame.removeView(BubbleView.this);
-
+                        int cc = mFrame.getChildCount();
+                        mFrame.removeView(BubbleView.this);
+                        cc = mFrame.getChildCount();
 						if (popped) {
 							log("Pop!");
 
@@ -363,6 +370,7 @@ public class BubbleActivity extends Activity {
 					}
 				});
 			}
+            postInvalidate();
 		}
 
 		// Change the Bubble's speed and direction
@@ -409,7 +417,7 @@ public class BubbleActivity extends Activity {
 
             mXPos += mDx;
             mYPos += mDy;
-
+            postInvalidate();
             return isOutOfView();
 
 		}
@@ -420,8 +428,9 @@ public class BubbleActivity extends Activity {
 
             Rect rect = new Rect();
             mFrame.getDrawingRect(rect);
-            return  mXPos < 0 || mXPos > rect.width() ||
-                    mYPos < 0 || mYPos > rect.height();
+
+            return  mXPos < 0 || mXPos > mDisplayWidth ||
+                    mYPos < 0 || mYPos > mDisplayHeight;
 
 		}
 	}

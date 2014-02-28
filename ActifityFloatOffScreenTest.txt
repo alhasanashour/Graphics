@@ -1,0 +1,2 @@
+02-28 07:43:45.783    2267-2267/? I/Lab-Graphics? Creating Bubble at: x:500.0 y:500.0
+02-28 07:43:47.863    2267-2267/? I/Lab-Graphics? Bubble removed from view!
