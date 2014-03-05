@@ -1,3 +1,2 @@
-02-28 07:35:46.880  10199-10199/? I/Lab-Graphics? Creating Bubble at: x:100.0 y:100.0
-02-28 07:35:48.130  10199-10199/? I/Lab-Graphics? velocity X:3069.105 velocity Y:3069.105
-02-28 07:35:49.040  10199-10199/? I/Lab-Graphics? Bubble removed from view!
+03-05 07:24:08.613    1939-1939/? I/Lab-Graphics? Creating Bubble at: x:250.0 y:250.0
+03-05 07:24:10.143    1939-1939/? I/Lab-Graphics? Creating Bubble at: x:500.0 y:500.0
